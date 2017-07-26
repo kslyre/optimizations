@@ -7,20 +7,39 @@
 #include <structs.h>
 
 class SimpleFunctor {
-    QVector2D p1;
-    QVector2D p2;
+    QVector<QVector2D> point1;
+    QVector<QVector2D> point2;
     QVector2D center;
-    ProblemVector probVector;
 
 
-    Derivable funcVal;
+    double value;
 public:
     SimpleFunctor();
-    SimpleFunctor(QVector2D point1, QVector2D point2, QVector2D center, ProblemVector probVector);
-    void operator()(ProblemVector pv);
+    SimpleFunctor(QVector<QVector2D> point1, QVector<QVector2D> point2, QVector2D center, ProblemVector probVector);
+    void operator()(ProblemVector pv, int index);
 
-    Derivable f(int index);
+    int elems() { return 2; }
+    int lengthVector() { return point1.length(); }
+    int lengthParams() { return probVector.count(); }
+
+
+    ProblemVector grad(int index, int indexElement);
+
+    ProblemVector probVector;
+    ProblemVector resVector;
+
+    Derivable f1(int index, int indexParam, ProblemVector pv);
+    Derivable f2(int index, int indexParam, ProblemVector pv);
+    double f(ProblemVector pv);
+    double innerFnnn(int indexElement);
+
+    double innerF(int index, int elem);
 };
+
+
+
+
+
 
 class Functors
 {

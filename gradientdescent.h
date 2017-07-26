@@ -37,8 +37,8 @@ public:
     MatrixXf jacobianFixed(ProblemVector iter, int leng);
     VectorXf innerFuncFixed(ProblemVector iter, int leng);
 
-    MatrixXf jacobian(Functors functor);
-    VectorXf innerFunc(Functors functor);
+    MatrixXf jacobian(SimpleFunctor functor);
+    VectorXf innerFunc(SimpleFunctor functor);
 public slots:
     void gaussNewtonUniv(SimpleFunctor functor);
 };

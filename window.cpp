@@ -376,7 +376,25 @@ void Window::gaussNewtonUniv()
 {
     //prepareData();
 
-    SimpleFunctor sf;
+    QVector<QVector2D> fig1;
+    QVector<QVector2D> fig2;
+
+    fig1.append(QVector2D(0, 0));
+    fig1.append(QVector2D(1, 0));
+    fig1.append(QVector2D(1, 1));
+    fig1.append(QVector2D(0, 1));
+
+    fig2.append(QVector2D(3.4, 0.6));   // custom
+    fig2.append(QVector2D(4.4, 3.3));
+    fig2.append(QVector2D(  2, 5));
+    fig2.append(QVector2D(1.2, 2.5));
+
+    gd.massCenter(gd.fig2);
+
+    SimpleFunctor sf = SimpleFunctor(fig1, fig2,
+                                     gd.massCenter(fig2),
+                                     ProblemVector(0,0,0));
+
 
     gd.gaussNewtonUniv(sf);
 }

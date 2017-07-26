@@ -433,37 +433,37 @@ void GradientDescent::newton()
 
 }
 
-MatrixXf GradientDescent::jacobian(Functors functor)
+MatrixXf GradientDescent::jacobian(SimpleFunctor functor)
 {
-//    int length = functor.lengthVector();
-//    int lengthParams = functor.lengthParams();
-//    int elems = functor.elems();
+    int length = functor.lengthVector();
+    int lengthParams = functor.lengthParams();
+    int elems = functor.elems();
 
-//    MatrixXf j(elems*length, lengthParams);
+    MatrixXf j(elems*length, lengthParams);
 
-//    for(int index=0; index < length; index++){
-//        for(int indElem = 0; indElem < elems; indElem++){
-//            T pv = functor.grad(indElem);
-//            for(int indParam = 0; indParam < lengthParams; indParam++){
-//                j(elems*index + indElem, indParam) = pv[indParam];
-//            }
-//        }
-//    }
-    //return ;
+    for(int index=0; index < length; index++){
+        for(int indElem = 0; indElem < elems; indElem++){
+            ProblemVector pv = functor.grad(index, indElem);
+            for(int indParam = 0; indParam < lengthParams; indParam++){
+                j(elems*index + indElem, indParam) = pv[indParam];
+            }
+        }
+    }
+    return j;
 }
 
-VectorXf GradientDescent::innerFunc(Functors functor)
+VectorXf GradientDescent::innerFunc(SimpleFunctor functor)
 {
-//    int length = functor.lengthVector();
-//    int elems = functor.elems();
+    int length = functor.lengthVector();
+    int elems = functor.elems();
 
-//    VectorXf f(elems*length);
-//    for(int index=0; index < length; index++){
-//        for(int indElem = 0; indElem < elems; indElem++){
-//            j(elems*index + indElem) = functor.innerF();
-//        }
-//    }
-    //return 0;
+    VectorXf f(elems*length);
+    for(int index=0; index < length; index++){
+        for(int indElem = 0; indElem < elems; indElem++){
+            f(elems*index + indElem) = functor.innerF(index, indElem);
+        }
+    }
+    return f;
 }
 
 
@@ -499,27 +499,39 @@ void GradientDescent::gaussNewtonUniv(SimpleFunctor functor)
 {
     qDebug() << "!";
 
-//    ProblemVector iter = functor.params;
+    //ProblemVector iter = functor.probVector;
 
-//    bool min = false;
-//    while(!min){
-//        MatrixXf j = jacobian(functor);
-//        VectorXf f = functor.innerFunc();
+    int ops = 0;
+    bool min = false;
+    while(!min){
+        ops++;
+        qDebug() << ops;
 
-//        MatrixXf b = j.transpose()*f;
-//        MatrixXf a = j.transpose()*j;
+        MatrixXf j = jacobian(functor);
+        VectorXf f = innerFunc(functor); //functor.innerFunc();
 
-//        MatrixXf x = a.llt().solve(-b);
+        MatrixXf b = j.transpose()*f;
+        MatrixXf a = j.transpose()*j;
 
-//        ProblemVector nextIter = iter + x;
-//        double err = qAbs(functor.func(nextIter) - functor.func(iter));
-//        min = err < 1e-6;
+        MatrixXf x = a.llt().solve(-b);
 
-//        if(err != err)
-//        {
-//            min = true;
-//        }
-//    }
+        qDebug() << " " << b(0) << b(1) << b(2);
+
+        ProblemVector nextIter = functor.probVector + ProblemVector(x(0), x(1), x(2));
+        //double err = qAbs(functor.func(nextIter) - functor.func(iter));
+        double err = qAbs(functor.f(nextIter) - functor.f(functor.probVector));
+        min = err < 1e-6;
+
+        if(err != err)
+        {
+            min = true;
+        }
+        functor.probVector = nextIter;
+        if(ops >= 25)
+            min = true;      
+    }
+    qDebug() << qRadiansToDegrees(functor.probVector[0])
+            << functor.probVector[1] << functor.probVector[2];
 }
 
 

@@ -12,12 +12,12 @@ class Tests : public QObject
 public:
     explicit Tests(QObject *parent = 0);
 
-public slots:
-    void functor1Test();
 signals:
 
 private slots:
     void gradientTest();
+    void functor1Test();
+    void functor2Test();
 };
 
 #endif // TESTS_H

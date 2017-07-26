@@ -20,15 +20,16 @@ public:
     double getDerivative() const {return deriv;}
 
     //inline ProblemVector operator +(const ProblemVector &v) const
-    inline Derivable operator+(const Derivable& f2) const;
-    inline Derivable operator-(const Derivable& f2) const;
-    inline Derivable operator*(const Derivable& f2) const;
-    inline Derivable operator/(const Derivable& f2) const;
+    Derivable operator+(const Derivable& f2) const;
+    Derivable operator-(const Derivable& f2) const;
+    Derivable operator*(const Derivable& f2) const;
+    Derivable operator/(const Derivable& f2) const;
     Derivable cos(Derivable f);
     Derivable sin(Derivable f);
     Derivable pow(Derivable f, double val);
 
     //Derivable f(Functors functor, int index);
+    Derivable operator *(const float &f2) const;
 };
 
 #endif // DERIVABLE_H

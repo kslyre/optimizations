@@ -7,6 +7,11 @@
 //}
 
 
+Derivable::Derivable()
+{
+
+}
+
 Derivable Derivable::operator+(const Derivable &f2) const
 {
     return Derivable(val + f2.val, deriv + f2.deriv);
@@ -20,6 +25,11 @@ Derivable Derivable::operator-(const Derivable &f2) const
 Derivable Derivable::operator*(const Derivable &f2) const
 {
     return Derivable(val * f2.val, deriv * f2.val + val * f2.deriv);
+}
+
+Derivable Derivable::operator*(const float &f2) const
+{
+    return Derivable(val * f2, deriv * f2);
 }
 
 Derivable Derivable::operator/(const Derivable &f2) const
