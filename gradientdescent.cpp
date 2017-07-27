@@ -466,7 +466,6 @@ VectorXf GradientDescent::innerFunc(SimpleFunctor functor)
     return f;
 }
 
-
 MatrixXf GradientDescent::jacobianFixed(ProblemVector iter, int leng)
 {
     MatrixXf j(2*leng, 3);
@@ -499,38 +498,36 @@ void GradientDescent::gaussNewtonUniv(SimpleFunctor functor)
 {
     qDebug() << "!";
 
-    //ProblemVector iter = functor.probVector;
-
     int ops = 0;
     bool min = false;
     while(!min){
         ops++;
-        qDebug() << ops;
+        //qDebug() << ops;
 
         MatrixXf j = jacobian(functor);
-        VectorXf f = innerFunc(functor); //functor.innerFunc();
+        VectorXf f = innerFunc(functor);
 
         MatrixXf b = j.transpose()*f;
         MatrixXf a = j.transpose()*j;
 
         MatrixXf x = a.llt().solve(-b);
 
-        qDebug() << " " << b(0) << b(1) << b(2);
+        //qDebug() << " " << x.rows() << b(0) << b(1) << b(2);
 
         ProblemVector nextIter = functor.probVector + ProblemVector(x(0), x(1), x(2));
-        //double err = qAbs(functor.func(nextIter) - functor.func(iter));
         double err = qAbs(functor.f(nextIter) - functor.f(functor.probVector));
-        min = err < 1e-6;
+        min = err < 1e-5;
 
         if(err != err)
         {
             min = true;
         }
         functor.probVector = nextIter;
-        if(ops >= 25)
+        if(ops >= 100)
             min = true;      
     }
-    qDebug() << qRadiansToDegrees(functor.probVector[0])
+    // Iterative closest point
+    qDebug() << ops << ": " << qRadiansToDegrees(functor.probVector[0])
             << functor.probVector[1] << functor.probVector[2];
 }
 

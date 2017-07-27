@@ -31,8 +31,8 @@ public:
     QPointF pconv(QVector2D p);
     void prepareData();
 
-    MatrixXf jacobian(ProblemVector iter, int leng);
-    VectorXf innerFunc(ProblemVector iter, int leng);
+    //MatrixXf jacobian(ProblemVector iter, int leng);
+    //VectorXf innerFunc(ProblemVector iter, int leng);
 protected:
     void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
 

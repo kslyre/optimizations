@@ -5,10 +5,13 @@
 #include <QtMath>
 
 
-struct ProblemVector
+class ProblemVector
 {
+public:
     double angle;
     QVector<double> transf;
+
+    QVector<double> params;
 
     ProblemVector(){}
 
@@ -26,6 +29,7 @@ struct ProblemVector
 
     int count()
     {
+        //params.length();
         return 3;
     }
 
@@ -64,11 +68,11 @@ struct ProblemVector
     }
 
     inline bool operator== (const ProblemVector &v) const
-        {
-            return ( (angle == v.angle) &
-                     (transf[0] == v.transf[0]) &
-                     (transf[1] == v.transf[1]) );
-        }
+    {
+        return ( (angle == v.angle) &
+                 (transf[0] == v.transf[0]) &
+                 (transf[1] == v.transf[1]) );
+    }
 };
 
 #endif // STRUCTS_H

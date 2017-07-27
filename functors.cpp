@@ -1,16 +1,16 @@
 #include "functors.h"
 
-Functors::Functors()
+Functor::Functor()
 {
 
 }
 
-double Functors::func()
+double Functor::func()
 {
 
 }
 
-double Functors::innerFunc()
+double Functor::innerFunc()
 {
 
 }
@@ -28,7 +28,6 @@ SimpleFunctor::SimpleFunctor(QVector<QVector2D> point1, QVector<QVector2D> point
     this->probVector = probVector;
 
     //funcVal = f(probVector);
-
 }
 
 void SimpleFunctor::operator()(ProblemVector pv, int index)
@@ -38,15 +37,20 @@ void SimpleFunctor::operator()(ProblemVector pv, int index)
 
 ProblemVector SimpleFunctor::grad(int index, int indexElement)
 {
-    ProblemVector pv;
+    ProblemVector pv;// = ProblemVector();
+//    for(int pvElemIndex=0; pvElemIndex<pv.count(); pvElemIndex++){
+//        pv[pvElemIndex] = f1(index, pvElemIndex, probVector, indexElement).getDerivative();
+//    }
+
     switch (indexElement) {
     case 0:
-        pv = ProblemVector(f1(index, 0, probVector).getDerivative(), f1(index, 1, probVector).getDerivative(), f1(index, 2, probVector).getDerivative());
+        pv = ProblemVector(f1(index, 0, probVector, 0).getDerivative(), f1(index, 1, probVector, 0).getDerivative(), f1(index, 2, probVector, 0).getDerivative());
         break;
     case 1:
-        pv = ProblemVector(f2(index, 0, probVector).getDerivative(), f2(index, 1, probVector).getDerivative(), f2(index, 2, probVector).getDerivative());
+        pv = ProblemVector(f1(index, 0, probVector, 1).getDerivative(), f1(index, 1, probVector, 1).getDerivative(), f1(index, 2, probVector, 1).getDerivative());
         break;
     }
+
     return pv;
 }
 
@@ -54,19 +58,9 @@ double SimpleFunctor::f(ProblemVector pv)
 {
     double res = 0;
     for(int i=0; i<point1.length(); i++){
-        res += qSqrt(qPow(f1(i, 0, pv).getValue(), 2) + qPow(f2(i, 0, pv).getValue(), 2));
+        res += qSqrt(qPow(f1(i, 0, pv, 0).getValue(), 2) + qPow(f1(i, 0, pv, 1).getValue(), 2));
     }
-    return res;
-}
 
-double SimpleFunctor::innerFnnn(int indexElement)
-{
-    double res = 0;
-//    if(indexElement == 0){
-//        res = innerF(fig2[index], vector).x() - fig1[index].x();
-//    }else{
-//        res = innerF(fig2[index], vector).y() - fig1[index].y();
-//    }
     return res;
 }
 
@@ -85,47 +79,11 @@ double SimpleFunctor::innerF(int index, int elem)
                          + probVector[2] - point1[index].y();
         break;
     }
+
     return res;
 }
 
-Derivable SimpleFunctor::f1(int index, int indexParam, ProblemVector pv)
-{
-//    QVector<Derivable> pvD = probVector;
-//    for(int i; i<probVector.length(); i++){
-//        if(i == index)
-//            pvD[i] = Derivable::IndependendVariable(probVector[i]);
-//        else
-//            pvD[i] = Derivable::NoVariable(probVector[i]);
-//    }
-
-//    Derivable ad = pvD[0];
-//    Derivable txd = pvD[1];
-//    Derivable tyd = pvD[2];
-
-//    //Derivable ad = Derivable::IndependendVariable(a);
-//    return center.x() + (p2.x() - center.x())*ad.cos(ad) - (p2.y() - center.y())*ad.sin(ad) + txd + tyd - p1.x();
-
-
-    QVector<Derivable> pvD;
-    for(int i=0; i<pv.count(); i++){
-        Derivable xD;
-        if(i == indexParam)
-            xD = Derivable::IndependendVariable(pv[i]);
-        else
-            xD = Derivable(pv[i]);
-            //xD = Derivable::NoVariable(probVector[i]);
-        pvD.append(xD);
-    }
-
-    Derivable ad = pvD[0];
-    Derivable txd = pvD[1];
-    Derivable tyd = pvD[2];
-
-    //return center.x() + (p2.x() - center.x())*ad.cos(ad) - (p2.y() - center.y())*ad.sin(ad) + txd + tyd - p1.x();
-    return (Derivable(center.x()) + Derivable(point2[index].x() - center.x())*ad.cos(ad) - Derivable(point2[index].y() - center.y())*ad.sin(ad) + txd - Derivable(point1[index].x()));
-}
-
-Derivable SimpleFunctor::f2(int index, int indexParam, ProblemVector pv)
+Derivable SimpleFunctor::f1(int index, int indexParam, ProblemVector pv, int val)
 {
     QVector<Derivable> pvD;
     for(int i=0; i<pv.count(); i++){
@@ -141,5 +99,16 @@ Derivable SimpleFunctor::f2(int index, int indexParam, ProblemVector pv)
     Derivable txd = pvD[1];
     Derivable tyd = pvD[2];
 
-    return (Derivable(center.y()) + Derivable(point2[index].x() - center.x())*ad.sin(ad) + Derivable(point2[index].y() - center.y())*ad.cos(ad) + tyd - Derivable(point1[index].y()));
+    Derivable res;
+
+    switch (val) {
+    case 0:
+        res = (Derivable(center.x()) + Derivable(point2[index].x() - center.x())*ad.cos(ad) - Derivable(point2[index].y() - center.y())*ad.sin(ad) + txd - Derivable(point1[index].x()));
+        break;
+    case 1:
+        res = (Derivable(center.y()) + Derivable(point2[index].x() - center.x())*ad.sin(ad) + Derivable(point2[index].y() - center.y())*ad.cos(ad) + tyd - Derivable(point1[index].y()));
+        break;
+    }
+
+    return res;
 }
